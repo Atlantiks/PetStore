@@ -1,6 +1,9 @@
 package org.example.controller;
 
 import org.example.command.Command;
+import org.example.exception.ExitException;
+import org.example.exception.NotFoundException;
+import org.example.exception.WrongUserInputException;
 
 import java.util.List;
 import java.util.Scanner;
@@ -13,16 +16,31 @@ public class PetStore {
         this.commands = commands;
     }
 
+
     public void run() {
+        System.out.println("Hello, please enter help to see all commands");
+        try {
+            execute();
+        } catch (ExitException e) {
+            System.out.println("Thanks for your visit! See you next time...");
+        }
+    }
+    public void execute() {
         boolean commandExists;
         while (true) {
             commandExists = false;
             System.out.println("Enter new command:");
-            var x = sc.nextLine();
+            var userInput = sc.nextLine();
             for (Command command : commands) {
-                if (command.canBeExecuted(x)) {
+                if (command.canBeExecuted(userInput)) {
                     commandExists = true;
-                    command.execute();
+                    try {
+                        command.execute();
+                    } catch (NotFoundException e) {
+                        System.out.println(e.getMessage());
+                    } catch (WrongUserInputException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 }
             }

@@ -8,6 +8,8 @@ public class Pet {
     private String name;
     private Category category;
     private PetStatus status;
+    private String[] photoUrls;
+    private Tag[] tags;
 
     public enum PetStatus {
         available,

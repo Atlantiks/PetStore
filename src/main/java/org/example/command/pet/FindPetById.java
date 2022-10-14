@@ -4,8 +4,9 @@ import org.example.command.Command;
 import org.example.service.PetService;
 
 public class FindPetById implements Command {
-    private static final PetService PET_SERVICE = new PetService();
-    private static final String COMMAND = "find pet by id";
+    public static final String COMMAND = "find pet by id";
+    private static final PetService PET_SERVICE = PetService.getInstance();
+
 
 
     @Override
