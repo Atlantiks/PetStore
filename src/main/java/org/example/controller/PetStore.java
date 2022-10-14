@@ -1,9 +1,7 @@
 package org.example.controller;
 
 import org.example.command.Command;
-import org.example.exception.ExitException;
-import org.example.exception.NotFoundException;
-import org.example.exception.WrongUserInputException;
+import org.example.exception.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -36,9 +34,8 @@ public class PetStore {
                     commandExists = true;
                     try {
                         command.execute();
-                    } catch (NotFoundException e) {
-                        System.out.println(e.getMessage());
-                    } catch (WrongUserInputException e) {
+                    } catch (NotFoundException | WrongUserInputException | LoginFailureException |
+                             BlancFieldException e) {
                         System.out.println(e.getMessage());
                     }
                     break;
