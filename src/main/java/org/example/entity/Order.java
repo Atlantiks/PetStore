@@ -12,7 +12,7 @@ public class Order {
     private OrderStatus status;
     private Boolean complete;
 
-    enum OrderStatus {
+    public enum OrderStatus {
         placed,
         approved,
         delivered
