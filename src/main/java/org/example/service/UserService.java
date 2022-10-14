@@ -3,6 +3,7 @@ package org.example.service;
 import lombok.Setter;
 import org.example.exception.BlancFieldException;
 import org.example.exception.LoginFailureException;
+import org.example.exception.NotFoundException;
 import org.example.http.ApiResponse;
 import org.example.http.UserRequests;
 
@@ -19,6 +20,14 @@ public class UserService {
 
     public static UserService getInstance() {
         return USER_SERVICE;
+    }
+
+    public void getUserByUserName() {
+        System.out.println("Please, enter your username");
+        String userName = scanner.nextLine();
+
+        var user = USER_RQS.getUserByName(userName).orElseThrow(() -> new NotFoundException("User not found"));
+        System.out.println(user);
     }
 
     public void login() {

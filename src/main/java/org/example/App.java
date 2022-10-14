@@ -5,6 +5,7 @@ import org.example.command.pet.FindPetById;
 import org.example.command.pet.FindPetByStatus;
 import org.example.command.store.FindOrderById;
 import org.example.command.store.GetStoreInventories;
+import org.example.command.user.GetUserByUserName;
 import org.example.command.user.Login;
 import org.example.command.user.Logout;
 import org.example.controller.PetStore;
@@ -27,10 +28,14 @@ public class App {
         commands.add(new PetMenu());
         commands.add(new StoreMenu());
         commands.add(new UserMenu());
+
         commands.add(new FindPetById());
         commands.add(new FindPetByStatus());
+
         commands.add(new GetStoreInventories());
         commands.add(new FindOrderById());
+
+        commands.add(new GetUserByUserName());
         commands.add(new Login());
         commands.add(new Logout());
 
