@@ -42,8 +42,11 @@ public class PetRequests {
         // not ready
     }
 
-    void findPetByStatus(org.example.entity.Pet.PetStatus status) {
+    public Optional<Pet[]> findPetByStatus(String status) {
+        ApiResponse response =  sendGETRequest(SITE + "/pet/findByStatus?status=" + status);
 
+        return response.getCode() == 200 ? Optional.of(
+                GSON.fromJson(response.getMessage(),Pet[].class)) : Optional.empty();
     }
 
     @SneakyThrows

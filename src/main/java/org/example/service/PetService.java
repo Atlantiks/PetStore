@@ -6,6 +6,7 @@ import org.example.exception.NotFoundException;
 import org.example.exception.WrongUserInputException;
 import org.example.http.PetRequests;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class PetService {
@@ -30,8 +31,24 @@ public class PetService {
             throw new WrongUserInputException("Incorrect input. Only integer numbers are allowed here");
         }
 
-        Pet a = PET_RQS.findPetById(userInput).orElseThrow(() -> new NotFoundException("Pet not found"));
+        Pet returnedPet = PET_RQS.findPetById(userInput).orElseThrow(() -> new NotFoundException("Pet not found"));
+        System.out.println(returnedPet);
+    }
 
-        System.out.println(a);
+    public void findPetByStatus() {
+        String userInput;
+        Pet.PetStatus petStatus;
+        System.out.println("Please, enter pet status");
+        System.out.println("Available values : available, pending, sold");
+
+        userInput = scanner.nextLine();
+        try {
+            petStatus = Pet.PetStatus.valueOf(userInput);
+        } catch (IllegalArgumentException e) {
+            throw new WrongUserInputException("Couldn't map your input to existing values");
+        }
+
+        Pet[] returnedPets = PET_RQS.findPetByStatus(petStatus.name()).orElseThrow(() -> new NotFoundException("Pet not found"));
+        Arrays.stream(returnedPets).forEach(System.out::println);
     }
 }
