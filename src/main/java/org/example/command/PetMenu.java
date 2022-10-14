@@ -16,5 +16,6 @@ public class PetMenu implements Command {
         System.out.println("===========PET SERVICE MENU===========");
         System.out.println(String.format("Type %s to obtain pet with entered id", "\033[0;93m" + FindPetById.COMMAND + "\033[0m"));
         System.out.println(String.format("Type %s to obtain pets with entered status", "\033[0;93m" + FindPetByStatus.COMMAND + "\033[0m"));
+        System.out.println();
     }
 }

@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.command.Command;
+import org.example.command.Exit;
 import org.example.command.Help;
 import org.example.command.PetMenu;
 import org.example.command.pet.FindPetById;
@@ -18,6 +19,7 @@ public class App {
         List<Command> commands = new ArrayList<>();
 
         commands.add(new Help());
+        commands.add(new Exit());
         commands.add(new PetMenu());
         commands.add(new FindPetById());
         commands.add(new FindPetByStatus());
