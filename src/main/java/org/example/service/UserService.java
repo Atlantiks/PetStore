@@ -8,6 +8,8 @@ import org.example.exception.OperationFailedException;
 import org.example.http.ApiResponse;
 import org.example.http.UserRequests;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class UserService {
@@ -59,6 +61,54 @@ public class UserService {
     }
 
     public void createUser() {
+        var apiResponse = USER_RQS.saveUser(createNewUser());
+
+        if (apiResponse.getCode() == 200) {
+            System.out.println("\033[0;92m" + "User successfully created" + "\033[0m");
+        } else {
+            System.out.println(apiResponse.getCode());
+            throw new OperationFailedException("Couldn't create new user with entered credentials");
+        }
+    }
+
+    public void createArrayOfUsers() {
+        List<User> newUsers = new ArrayList<>();
+        boolean addNextUser = true;
+        String userInput;
+
+        while (addNextUser) {
+            if (newUsers.size() == 0) {
+                System.out.println("User array is now empty.");
+                System.out.println("Wanna add first user?");
+            } else {
+                System.out.printf("User array now contains %d user(s).\n", newUsers.size());
+                System.out.println("Wanna add another user?");
+            }
+            userInput = scanner.nextLine();
+            if (userInput.equalsIgnoreCase("Y")) {
+                newUsers.add(createNewUser());
+            } else {
+                addNextUser = false;
+            }
+        }
+
+        ApiResponse apiResponse;
+
+        if (newUsers.size() > 0) {
+            apiResponse = USER_RQS.saveUserArray(newUsers.toArray(new User[0]));
+        } else {
+            throw new LoginFailureException("You should have added at least one user!");
+        }
+
+        if (apiResponse.getCode() == 200) {
+            System.out.println("\033[0;92m" + "All users from entered array were successfully created" + "\033[0m");
+        } else {
+            System.out.println(apiResponse.getCode());
+            throw new OperationFailedException("Couldn't upload user array with entered credentials");
+        }
+    }
+
+    private User createNewUser() {
         String firstName, lastName, email, password, phone;
 
         System.out.println("Please, enter new user's first name");
@@ -72,7 +122,7 @@ public class UserService {
         System.out.println("Please, enter new user's phone number");
         phone = scanner.nextLine();
 
-        User newUser = User.builder()
+        return User.builder()
                 .id(0)
                 .firstName(firstName)
                 .lastName(lastName)
@@ -81,14 +131,5 @@ public class UserService {
                 .phone(phone)
                 .userStatus(0)
                 .build();
-
-        var apiResponse = USER_RQS.saveUser(newUser);
-
-        if (apiResponse.getCode() == 200) {
-            System.out.println("\033[0;92m" + "User successfully created" + "\033[0m");
-        } else {
-            System.out.println(apiResponse.getCode());
-            throw new OperationFailedException("Couldn't create new user with entered credentials");
-        }
     }
 }

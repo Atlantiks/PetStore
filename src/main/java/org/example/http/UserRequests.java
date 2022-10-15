@@ -40,6 +40,14 @@ public class UserRequests {
                 "application/json");
     }
 
+    public ApiResponse saveUserArray(User[] newUsers) {
+        String requestBody = GSON.toJson(newUsers);
+        return sendPOSTRequest(
+                SITE + "/user/createWithArray",
+                requestBody,
+                "application/json");
+    }
+
     public ApiResponse login(String userName, String userPassword) {
         return sendGETRequest(SITE + "/user/login?username=" + userName + "&password=" + userPassword);
     }
