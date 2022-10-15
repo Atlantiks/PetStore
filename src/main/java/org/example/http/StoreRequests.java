@@ -44,6 +44,10 @@ public class StoreRequests {
                 GSON.fromJson(response.getMessage(), Order.class)) : Optional.empty();
     }
 
+    public ApiResponse deleteOrder(Long id) {
+        return sendDELETERequest(SITE + "/store/order/" + id);
+    }
+
     @SneakyThrows
     private ApiResponse sendGETRequest(String fullPath) {
         var request = HttpRequest.newBuilder(URI.create(fullPath))
@@ -71,5 +75,21 @@ public class StoreRequests {
                 .code(httpResponse.statusCode())
                 .message(httpResponse.body())
                 .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendDELETERequest(String fullPath) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .DELETE()
+                .header("accept", "application/json")
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return httpResponse.statusCode() != 200 ?
+                ApiResponse.builder()
+                        .code(httpResponse.statusCode())
+                        .message(httpResponse.body())
+                        .build()
+                : GSON.fromJson(httpResponse.body(), ApiResponse.class);
     }
 }

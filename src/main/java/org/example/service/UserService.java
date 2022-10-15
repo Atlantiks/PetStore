@@ -5,6 +5,7 @@ import org.example.entity.User;
 import org.example.exception.BlancFieldException;
 import org.example.exception.LoginFailureException;
 import org.example.exception.OperationFailedException;
+import org.example.exception.WrongUserInputException;
 import org.example.http.ApiResponse;
 import org.example.http.UserRequests;
 
@@ -105,6 +106,26 @@ public class UserService {
         } else {
             System.out.println(apiResponse.getCode());
             throw new OperationFailedException("Couldn't upload user array with entered credentials");
+        }
+    }
+
+    public void deleteUser() {
+        System.out.println("Please, enter ID of user that needs to be deleted");
+        String userName = scanner.nextLine();
+
+        ApiResponse response = USER_RQS.deleteUser(userName);
+
+        switch (response.getCode()) {
+            case 200:
+                System.out.println("\033[0;92m" + "User with id = " + response.getMessage() +
+                        " successfully deleted" + "\033[0m");
+                break;
+            case 400:
+                throw new OperationFailedException("Invalid ID supplied");
+            case 404:
+                throw new OperationFailedException("User not found");
+            default:
+                throw new OperationFailedException("Unknown error occurred.");
         }
     }
 

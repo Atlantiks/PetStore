@@ -4,6 +4,7 @@ import lombok.Setter;
 import org.example.entity.Order;
 import org.example.exception.OperationFailedException;
 import org.example.exception.WrongUserInputException;
+import org.example.http.ApiResponse;
 import org.example.http.StoreRequests;
 
 import java.time.Instant;
@@ -71,5 +72,37 @@ public class StoreService {
 
         Order placedOrder = STORE_RQS.placeOrder(order).orElseThrow(() -> new OperationFailedException("Invalid order"));
         System.out.println(placedOrder);
+    }
+
+    public void deleteOrderById() {
+        long userInput;
+        System.out.println("Please, enter ID of order to return");
+        System.out.println("Only integer positive numbers (>0) are allowed here");
+        try {
+            userInput = Long.parseLong(scanner.nextLine());
+            if (userInput <= 0) {
+                throw new WrongUserInputException("Incorrect input. " +
+                        "For valid response try integer IDs with positive integer value. " +
+                        "Negative or non-integer values will generate API errors");
+            }
+        } catch (NumberFormatException e) {
+            throw new WrongUserInputException("Incorrect input. Only integer positive numbers (>0) are allowed here");
+        }
+
+        ApiResponse response = STORE_RQS.deleteOrder(userInput);
+
+        switch (response.getCode()) {
+            case 200:
+                System.out.println("\033[0;92m" + "Order with id = " + response.getMessage() +
+                        " successfully deleted" + "\033[0m");
+                break;
+            case 400:
+                throw new OperationFailedException("Invalid ID supplied");
+            case 404:
+                throw new OperationFailedException("Order not found");
+            default:
+                throw new OperationFailedException("Unknown error occurred.");
+        }
+
     }
 }

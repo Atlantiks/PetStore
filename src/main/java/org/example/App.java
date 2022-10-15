@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.command.*;
 import org.example.command.pet.*;
+import org.example.command.store.DeleteOrderById;
 import org.example.command.store.FindOrderById;
 import org.example.command.store.GetStoreInventories;
 import org.example.command.store.PlaceOrder;
@@ -35,10 +36,12 @@ public class App {
         commands.add(new PlaceOrder());
         commands.add(new GetStoreInventories());
         commands.add(new FindOrderById());
+        commands.add(new DeleteOrderById());
 
         commands.add(new GetUserByUserName());
         commands.add(new CreateUser());
         commands.add(new CreateArrayOfUsers());
+        commands.add(new DeleteUser());
         commands.add(new Login());
         commands.add(new Logout());
 

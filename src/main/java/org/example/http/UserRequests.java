@@ -48,6 +48,10 @@ public class UserRequests {
                 "application/json");
     }
 
+    public ApiResponse deleteUser(String userName) {
+        return sendDELETERequest(SITE + "/user/" + userName);
+    }
+
     public ApiResponse login(String userName, String userPassword) {
         return sendGETRequest(SITE + "/user/login?username=" + userName + "&password=" + userPassword);
     }
@@ -94,5 +98,21 @@ public class UserRequests {
                 .code(httpResponse.statusCode())
                 .message(httpResponse.body())
                 .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendDELETERequest(String fullPath) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .DELETE()
+                .header("accept", "application/json")
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return httpResponse.statusCode() != 200 ?
+                ApiResponse.builder()
+                        .code(httpResponse.statusCode())
+                        .message(httpResponse.body())
+                        .build()
+                : GSON.fromJson(httpResponse.body(), ApiResponse.class);
     }
 }
