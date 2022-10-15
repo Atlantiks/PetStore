@@ -17,14 +17,18 @@ public class PetRequests {
 
     public Optional<Pet> save(Pet pet) {
         String petAsJson = GSON.toJson(pet);
-        var apiResponse = sendPOSTRequest(SITE + "/pet", petAsJson);
+        var apiResponse = sendPOSTRequest(SITE + "/pet", petAsJson, "application/json");
 
         return apiResponse.getCode() == 200 ? Optional.of(
                 GSON.fromJson(apiResponse.getMessage(),Pet.class)) : Optional.empty();
     }
 
-    void update(org.example.entity.Pet pet) {
-        // not ready
+    public ApiResponse update(Long petId, String petName, String petStatus) {
+        String requestBody = String.format("name=%s&status=%s",petName,petStatus);
+        return sendPOSTRequest(
+                SITE + "/pet/" + petId,
+                requestBody,
+                "application/x-www-form-urlencoded");
     }
 
     public Optional<Pet> findPetById(Integer id) {
@@ -68,11 +72,11 @@ public class PetRequests {
     }
 
     @SneakyThrows
-    private ApiResponse sendPOSTRequest(String fullPath, String body) {
+    private ApiResponse sendPOSTRequest(String fullPath, String body, String contentType) {
         var request = HttpRequest.newBuilder(URI.create(fullPath))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("accept", "application/json")
-                .header("Content-Type", "application/json")
+                .header("Content-Type", contentType)
                 .build();
         var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
