@@ -2,8 +2,7 @@ package org.example.service;
 
 import lombok.Setter;
 import org.example.entity.Order;
-import org.example.exception.BlancFieldException;
-import org.example.exception.NotFoundException;
+import org.example.exception.OperationFailedException;
 import org.example.exception.WrongUserInputException;
 import org.example.http.StoreRequests;
 
@@ -42,7 +41,7 @@ public class StoreService {
             throw new WrongUserInputException("Incorrect input. Only integer numbers (1-10) are allowed here");
         }
 
-        Order foundOrder = STORE_RQS.findOrderById(userInput).orElseThrow(() -> new NotFoundException("Order not found"));
+        Order foundOrder = STORE_RQS.findOrderById(userInput).orElseThrow(() -> new OperationFailedException("Order not found"));
         System.out.println(foundOrder);
     }
 
@@ -70,7 +69,7 @@ public class StoreService {
                 .complete(true)
                 .build();
 
-        Order placedOrder = STORE_RQS.placeOrder(order).orElseThrow(() -> new NotFoundException("Invalid order"));
+        Order placedOrder = STORE_RQS.placeOrder(order).orElseThrow(() -> new OperationFailedException("Invalid order"));
         System.out.println(placedOrder);
     }
 }

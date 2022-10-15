@@ -34,7 +34,7 @@ public class PetStore {
                     commandExists = true;
                     try {
                         command.execute();
-                    } catch (NotFoundException | WrongUserInputException | LoginFailureException |
+                    } catch (OperationFailedException | WrongUserInputException | LoginFailureException |
                              BlancFieldException e) {
                         System.out.println(e.getMessage());
                     }

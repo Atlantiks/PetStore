@@ -3,7 +3,7 @@ package org.example.http;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.example.entity.User;
-import org.example.exception.NotFoundException;
+import org.example.exception.OperationFailedException;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,15 +21,23 @@ public class UserRequests {
         var response = sendGETRequest2(SITE + "/user/" + userName);
 
         switch (response.getCode()) {
-            case 200 :
+            case 200:
                 return Optional.of(GSON.fromJson(response.getMessage(), User.class));
             case 400:
-                throw new NotFoundException("Invalid username supplied");
+                throw new OperationFailedException("Invalid username supplied");
             case 404:
-                throw new NotFoundException("User not found");
+                throw new OperationFailedException("User not found");
             default:
                 return Optional.empty();
         }
+    }
+
+    public ApiResponse saveUser(User newUser) {
+        String requestBody = GSON.toJson(newUser);
+        return sendPOSTRequest(
+                SITE + "/user/",
+                requestBody,
+                "application/json");
     }
 
     public ApiResponse login(String userName, String userPassword) {
@@ -48,7 +56,7 @@ public class UserRequests {
                 .build();
         var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
-        return GSON.fromJson(httpResponse.body(),ApiResponse.class);
+        return GSON.fromJson(httpResponse.body(), ApiResponse.class);
     }
 
     @SneakyThrows
@@ -56,6 +64,21 @@ public class UserRequests {
         var request = HttpRequest.newBuilder(URI.create(fullPath))
                 .GET()
                 .header("accept", "application/json")
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return ApiResponse.builder()
+                .code(httpResponse.statusCode())
+                .message(httpResponse.body())
+                .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendPOSTRequest(String fullPath, String body, String contentType) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .header("accept", "application/json")
+                .header("Content-Type", contentType)
                 .build();
         var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
