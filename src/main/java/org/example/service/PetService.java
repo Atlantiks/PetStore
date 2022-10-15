@@ -98,6 +98,32 @@ public class PetService {
 
     }
 
+    public void deletePet() {
+        long petId;
+
+        System.out.println("Please, enter ID of pet that needs to be deleted");
+        try {
+            petId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            throw new WrongUserInputException("Incorrect input. Only integer numbers are allowed here");
+        }
+
+        ApiResponse response = PET_RQS.deletePetById(petId);
+
+        switch (response.getCode()) {
+            case 200:
+                System.out.println("\033[0;92m" + "Pet with id = " + response.getMessage() +
+                        " successfully deleted" + "\033[0m");
+                break;
+            case 400:
+                throw new OperationFailedException("Invalid ID supplied");
+            case 404:
+                throw new OperationFailedException("Pet not found");
+            default:
+                throw new OperationFailedException("Unknown error occurred.");
+        }
+    }
+
     public void findPetById() {
         int userInput;
         System.out.println("Please, enter ID of pet to return");

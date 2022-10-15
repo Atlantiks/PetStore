@@ -20,11 +20,11 @@ public class PetRequests {
         var apiResponse = sendPOSTRequest(SITE + "/pet", petAsJson, "application/json");
 
         return apiResponse.getCode() == 200 ? Optional.of(
-                GSON.fromJson(apiResponse.getMessage(),Pet.class)) : Optional.empty();
+                GSON.fromJson(apiResponse.getMessage(), Pet.class)) : Optional.empty();
     }
 
     public ApiResponse update(Long petId, String petName, String petStatus) {
-        String requestBody = String.format("name=%s&status=%s",petName,petStatus);
+        String requestBody = String.format("name=%s&status=%s", petName, petStatus);
         return sendPOSTRequest(
                 SITE + "/pet/" + petId,
                 requestBody,
@@ -32,18 +32,18 @@ public class PetRequests {
     }
 
     public Optional<Pet> findPetById(Integer id) {
-        ApiResponse response =  sendGETRequest(SITE + "/pet/" + id);
+        ApiResponse response = sendGETRequest(SITE + "/pet/" + id);
 
         return response.getCode() == 200 ? Optional.of(
-                GSON.fromJson(response.getMessage(),Pet.class)) : Optional.empty();
+                GSON.fromJson(response.getMessage(), Pet.class)) : Optional.empty();
     }
 
     void updatePetById(Integer id) {
         // not ready
     }
 
-    void deletePetById(Integer id) {
-        // not ready
+    public ApiResponse deletePetById(Long id) {
+        return sendDELETERequest(SITE + "/pet/" + id, "1");
     }
 
     void uploadImageForPetWithId(Integer id) {
@@ -51,10 +51,10 @@ public class PetRequests {
     }
 
     public Optional<Pet[]> findPetByStatus(String status) {
-        ApiResponse response =  sendGETRequest(SITE + "/pet/findByStatus?status=" + status);
+        ApiResponse response = sendGETRequest(SITE + "/pet/findByStatus?status=" + status);
 
         return response.getCode() == 200 ? Optional.of(
-                GSON.fromJson(response.getMessage(),Pet[].class)) : Optional.empty();
+                GSON.fromJson(response.getMessage(), Pet[].class)) : Optional.empty();
     }
 
     @SneakyThrows
@@ -84,5 +84,22 @@ public class PetRequests {
                 .code(httpResponse.statusCode())
                 .message(httpResponse.body())
                 .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendDELETERequest(String fullPath, String apiKey) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .DELETE()
+                .header("accept", "application/json")
+                .header("api_key", apiKey)
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return httpResponse.statusCode() != 200 ?
+                ApiResponse.builder()
+                        .code(httpResponse.statusCode())
+                        .message(httpResponse.body())
+                        .build()
+                : GSON.fromJson(httpResponse.body(), ApiResponse.class);
     }
 }

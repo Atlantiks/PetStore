@@ -1,10 +1,7 @@
 package org.example;
 
 import org.example.command.*;
-import org.example.command.pet.AddPet;
-import org.example.command.pet.FindPetById;
-import org.example.command.pet.FindPetByStatus;
-import org.example.command.pet.UpdatePet;
+import org.example.command.pet.*;
 import org.example.command.store.FindOrderById;
 import org.example.command.store.GetStoreInventories;
 import org.example.command.store.PlaceOrder;
@@ -31,6 +28,7 @@ public class App {
 
         commands.add(new AddPet());
         commands.add(new UpdatePet());
+        commands.add(new DeletePet());
         commands.add(new FindPetById());
         commands.add(new FindPetByStatus());
 
