@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.command.*;
+import org.example.command.pet.AddPet;
 import org.example.command.pet.FindPetById;
 import org.example.command.pet.FindPetByStatus;
 import org.example.command.store.FindOrderById;
@@ -29,6 +30,7 @@ public class App {
         commands.add(new StoreMenu());
         commands.add(new UserMenu());
 
+        commands.add(new AddPet());
         commands.add(new FindPetById());
         commands.add(new FindPetByStatus());
 

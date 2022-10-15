@@ -15,8 +15,12 @@ public class PetRequests {
     private static final String SITE = "https://petstore.swagger.io/v2";
     public static final Gson GSON = new Gson().newBuilder().setPrettyPrinting().create();
 
-    void save(org.example.entity.Pet pet) {
-        // not ready
+    public Optional<Pet> save(Pet pet) {
+        String petAsJson = GSON.toJson(pet);
+        var apiResponse = sendPOSTRequest(SITE + "/pet", petAsJson);
+
+        return apiResponse.getCode() == 200 ? Optional.of(
+                GSON.fromJson(apiResponse.getMessage(),Pet.class)) : Optional.empty();
     }
 
     void update(org.example.entity.Pet pet) {
@@ -54,6 +58,21 @@ public class PetRequests {
         var request = HttpRequest.newBuilder(URI.create(fullPath))
                 .GET()
                 .header("accept", "application/json")
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return ApiResponse.builder()
+                .code(httpResponse.statusCode())
+                .message(httpResponse.body())
+                .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendPOSTRequest(String fullPath, String body) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .header("accept", "application/json")
+                .header("Content-Type", "application/json")
                 .build();
         var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 

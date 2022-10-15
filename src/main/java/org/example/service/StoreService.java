@@ -2,7 +2,6 @@ package org.example.service;
 
 import lombok.Setter;
 import org.example.entity.Order;
-import org.example.entity.Pet;
 import org.example.exception.NotFoundException;
 import org.example.exception.WrongUserInputException;
 import org.example.http.StoreRequests;

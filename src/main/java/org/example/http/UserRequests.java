@@ -2,9 +2,7 @@ package org.example.http;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
-import org.example.entity.Order;
 import org.example.entity.User;
-import org.example.exception.LoginFailureException;
 import org.example.exception.NotFoundException;
 
 import java.net.URI;
