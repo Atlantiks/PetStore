@@ -7,6 +7,7 @@ import org.example.command.pet.FindPetByStatus;
 import org.example.command.pet.UpdatePet;
 import org.example.command.store.FindOrderById;
 import org.example.command.store.GetStoreInventories;
+import org.example.command.store.PlaceOrder;
 import org.example.command.user.GetUserByUserName;
 import org.example.command.user.Login;
 import org.example.command.user.Logout;
@@ -36,6 +37,7 @@ public class App {
         commands.add(new FindPetById());
         commands.add(new FindPetByStatus());
 
+        commands.add(new PlaceOrder());
         commands.add(new GetStoreInventories());
         commands.add(new FindOrderById());
 
