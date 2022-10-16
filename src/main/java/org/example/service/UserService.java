@@ -5,7 +5,6 @@ import org.example.entity.User;
 import org.example.exception.BlancFieldException;
 import org.example.exception.LoginFailureException;
 import org.example.exception.OperationFailedException;
-import org.example.exception.WrongUserInputException;
 import org.example.http.ApiResponse;
 import org.example.http.UserRequests;
 

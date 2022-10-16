@@ -29,6 +29,7 @@ public class App {
 
         commands.add(new AddPet());
         commands.add(new UpdatePet());
+        commands.add(new ReplacePet());
         commands.add(new DeletePet());
         commands.add(new FindPetById());
         commands.add(new FindPetByStatus());

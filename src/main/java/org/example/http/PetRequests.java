@@ -23,6 +23,11 @@ public class PetRequests {
                 GSON.fromJson(apiResponse.getMessage(), Pet.class)) : Optional.empty();
     }
 
+    public ApiResponse update(Pet pet) {
+        String petAsJson = GSON.toJson(pet);
+        return sendPUTRequest(SITE + "/pet", petAsJson, "application/json");
+    }
+
     public ApiResponse update(Long petId, String petName, String petStatus) {
         String requestBody = String.format("name=%s&status=%s", petName, petStatus);
         return sendPOSTRequest(
@@ -31,15 +36,11 @@ public class PetRequests {
                 "application/x-www-form-urlencoded");
     }
 
-    public Optional<Pet> findPetById(Integer id) {
+    public Optional<Pet> findPetById(Long id) {
         ApiResponse response = sendGETRequest(SITE + "/pet/" + id);
 
         return response.getCode() == 200 ? Optional.of(
                 GSON.fromJson(response.getMessage(), Pet.class)) : Optional.empty();
-    }
-
-    void updatePetById(Integer id) {
-        // not ready
     }
 
     public ApiResponse deletePetById(Long id) {
@@ -87,6 +88,21 @@ public class PetRequests {
     }
 
     @SneakyThrows
+    private ApiResponse sendPUTRequest(String fullPath, String body, String contentType) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .PUT(HttpRequest.BodyPublishers.ofString(body))
+                .header("accept", "application/json")
+                .header("Content-Type", contentType)
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return ApiResponse.builder()
+                .code(httpResponse.statusCode())
+                .message(httpResponse.body())
+                .build();
+    }
+
+    @SneakyThrows
     private ApiResponse sendDELETERequest(String fullPath, String apiKey) {
         var request = HttpRequest.newBuilder(URI.create(fullPath))
                 .DELETE()
@@ -102,4 +118,6 @@ public class PetRequests {
                         .build()
                 : GSON.fromJson(httpResponse.body(), ApiResponse.class);
     }
+
+
 }
