@@ -9,10 +9,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Optional;
 
 public class UserRequests {
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     private static final String SITE = "https://petstore.swagger.io/v2";
     public static final Gson GSON = new Gson().newBuilder().setPrettyPrinting().create();
 
@@ -46,6 +47,13 @@ public class UserRequests {
                 SITE + "/user/createWithArray",
                 requestBody,
                 "application/json");
+    }
+
+    public ApiResponse updateUser(User updatedUser, String oldUserName) {
+        String requestBody = GSON.toJson(updatedUser);
+        return sendPUTRequest(
+                SITE + "/user/" + oldUserName,
+                requestBody);
     }
 
     public ApiResponse deleteUser(String userName) {
@@ -91,6 +99,20 @@ public class UserRequests {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("accept", "application/json")
                 .header("Content-Type", contentType)
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return ApiResponse.builder()
+                .code(httpResponse.statusCode())
+                .message(httpResponse.body())
+                .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendPUTRequest(String fullPath, String body) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .PUT(HttpRequest.BodyPublishers.ofString(body))
+                .header("accept", "application/json")
                 .build();
         var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 

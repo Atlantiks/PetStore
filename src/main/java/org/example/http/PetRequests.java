@@ -4,10 +4,19 @@ import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.example.entity.Pet;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class PetRequests {
@@ -47,8 +56,18 @@ public class PetRequests {
         return sendDELETERequest(SITE + "/pet/" + id, "1");
     }
 
-    void uploadImageForPetWithId(Integer id) {
-        // not ready
+    public ApiResponse uploadImageForPetWithId(Long id, String metaData) {
+        String boundary = "-------------oiawn4tp89n4e9p5";
+        String filePath = "src/main/resources/2022-10-13.png";
+
+        Map<Object, Object> data = new HashMap<>();
+
+        data.put("additionalMetadata", metaData);
+        data.put("file", Paths.get(filePath));
+
+        return sendPOSTRequest(SITE + "/pet/" + id + "/uploadImage",
+                createPOSTBodyForMultipartFormData(data, boundary),
+                "multipart/form-data; boundary=" + boundary);
     }
 
     public Optional<Pet[]> findPetByStatus(String status) {
@@ -76,6 +95,21 @@ public class PetRequests {
     private ApiResponse sendPOSTRequest(String fullPath, String body, String contentType) {
         var request = HttpRequest.newBuilder(URI.create(fullPath))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
+                .header("accept", "application/json")
+                .header("Content-Type", contentType)
+                .build();
+        var httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return ApiResponse.builder()
+                .code(httpResponse.statusCode())
+                .message(httpResponse.body())
+                .build();
+    }
+
+    @SneakyThrows
+    private ApiResponse sendPOSTRequest(String fullPath, BodyPublisher body, String contentType) {
+        var request = HttpRequest.newBuilder(URI.create(fullPath))
+                .POST(body)
                 .header("accept", "application/json")
                 .header("Content-Type", contentType)
                 .build();
@@ -119,5 +153,36 @@ public class PetRequests {
                 : GSON.fromJson(httpResponse.body(), ApiResponse.class);
     }
 
+    @SneakyThrows
+    private BodyPublisher createPOSTBodyForMultipartFormData(
+            Map<Object, Object> data, String boundary) {
 
+        var byteArrays = new ArrayList<byte[]>();
+
+        byte[] separator = ("--" + boundary + "\r\nContent-Disposition: form-data; name=")
+                .getBytes(StandardCharsets.UTF_8);
+
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            byteArrays.add(separator);
+
+            if (entry.getValue() instanceof Path) {
+                var path = (Path) entry.getValue();
+                System.out.println("path = " + path);
+                String mimeType = Files.probeContentType(path);
+                System.out.println("mimeType = " + mimeType);
+                byteArrays.add(("\"" + entry.getKey() + "\"; filename=\""
+                        + path.getFileName() + "\"\r\nContent-Type: " + mimeType
+                        + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+                byteArrays.add(Files.readAllBytes(path));
+                byteArrays.add("\r\n".getBytes(StandardCharsets.UTF_8));
+            } else {
+                byteArrays.add(
+                        ("\"" + entry.getKey() + "\"\r\n\r\n" + entry.getValue()
+                                + "\r\n").getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        byteArrays
+                .add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
+        return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
+    }
 }

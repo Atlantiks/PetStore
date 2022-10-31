@@ -22,6 +22,25 @@ public class PetService {
     private PetService() {
     }
 
+    public void uploadPetImage() {
+        long userIdInput;
+        String metaData;
+
+        System.out.println("Please, enter ID of pet to update");
+        try {
+            userIdInput = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            throw new WrongUserInputException("Incorrect input. Only integer numbers are allowed here");
+        }
+
+        System.out.println("Please, enter additional data to pass to server");
+        metaData = scanner.nextLine();
+        if (metaData.isBlank()) throw new BlancFieldException("Empty fields are not allowed here");
+
+        var apiResponse = PET_RQS.uploadImageForPetWithId(userIdInput,metaData);
+        System.out.println(apiResponse.getMessage());
+    }
+
     public static PetService getInstance() {
         return PET_SERVICE;
     }

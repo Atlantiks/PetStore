@@ -108,6 +108,34 @@ public class UserService {
         }
     }
 
+    public void updateUser() {
+        System.out.println("Please, enter username of existing user:");
+        String userName = scanner.nextLine();
+
+        if (userName.isBlank()) throw new BlancFieldException("Blanc fields are not allowed here");
+
+        var user = USER_RQS.getUserByName(userName).orElseThrow(() -> new OperationFailedException("User not found"));
+        String oldUserName = user.getUsername();
+
+        System.out.println("Please, enter new username to be saved for this user:");
+        userName = scanner.nextLine();
+
+        if (userName.isBlank()) {
+            throw new BlancFieldException("Blanc fields are not allowed here");
+        } else {
+            user.setUsername(userName);
+        }
+
+        var apiResponse = USER_RQS.updateUser(user, oldUserName);
+
+        if (apiResponse.getCode() == 200) {
+            System.out.println("\033[0;92m" + "User successfully created" + "\033[0m");
+        } else {
+            System.out.println(apiResponse.getCode());
+            throw new OperationFailedException("Couldn't update existing user with entered credentials");
+        }
+    }
+
     public void deleteUser() {
         System.out.println("Please, enter ID of user that needs to be deleted");
         String userName = scanner.nextLine();

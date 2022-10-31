@@ -28,6 +28,7 @@ public class App {
         commands.add(new UserMenu());
 
         commands.add(new AddPet());
+        commands.add(new UploadPetImage());
         commands.add(new UpdatePet());
         commands.add(new ReplacePet());
         commands.add(new DeletePet());
@@ -43,6 +44,7 @@ public class App {
         commands.add(new CreateUser());
         commands.add(new CreateArrayOfUsers());
         commands.add(new DeleteUser());
+        commands.add(new UpdateUser());
         commands.add(new Login());
         commands.add(new Logout());
 
